@@ -5,19 +5,33 @@ import Product from "./Product";
 import "./ProductList.css";
 import { products as productData } from "../../products-data";
 
-const allCategories = new Set(productData.map((product) => product.category));
+const allCategories = [
+  "all", 
+  ...new Set(productData.map((product) => product.category))
+]
 
 const ProductList = () => {
   const [products, setProducts] = useState(productData);
   const [search, setSearch] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [categories, setCategories] = useState("");
+  const [categories, setCategories] = useState(allCategories);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
   };
 
+  const filterProducts = (category) => {
+    if(category === "all") {
+      setProducts(productData)
+      return;
+    }
+
+    const newProducts = productData.filter((product) => product.category=== category);
+    setProducts(newProducts)
+  } 
+
   useEffect(() => {
+    console.log(allCategories)
     setFilteredProducts(
       products.filter((product) =>
         product.title.toLowerCase().includes(search.toLowerCase())
@@ -34,7 +48,7 @@ const ProductList = () => {
 
           <div className="--flex-between --flex-dir-column --py">
             <Search inputValue={search} handleSearch={handleSearch} />
-            <Categories />
+            <Categories categories={categories} filterItems={filterProducts}/>
           </div>
         </header>
       </div>
